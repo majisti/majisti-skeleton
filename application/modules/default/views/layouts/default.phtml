@@ -1,0 +1,31 @@
+<?
+/**
+ * @desc Company's layout.
+ * @author Steven Rosato
+ */
+?>
+<?=$this->doctype() . PHP_EOL;?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<?
+$this->headTitle(APPLICATION_NAME);
+print $this->headers();
+?>
+</head>
+<body>
+
+<div id="background"><div id="container">
+    <?/* header */
+    print $this->render('default/header.phtml');?>
+    <!-- Content -->
+    <div id="content">
+<!--        <p><?//=$this->navigation()->breadcrumbs() . PHP_EOL;?></p>-->
+<!--        <p><?//=$this->render('blocks/language-switcher.phtml') . PHP_EOL;?></p>-->
+        <?=$this->layout()->content . PHP_EOL?>
+    </div>
+    <?=$this->render('default/footer.phtml')?>
+</div></div>
+<?=$this->inlineScript();?>
+</body>
+</html>
