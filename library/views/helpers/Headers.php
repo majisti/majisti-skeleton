@@ -5,7 +5,7 @@
  *
  * @author Steven Rosato
  */
-class MajistiW_View_Helper_Headers extends Zend_View_Helper_Abstract
+class MajistiT_View_Helper_Headers extends Zend_View_Helper_Abstract
 {
     /**
      * @desc Returns the common headers for this application
@@ -13,6 +13,19 @@ class MajistiW_View_Helper_Headers extends Zend_View_Helper_Abstract
      * @return output
      */
     public function headers()
+    {
+        return $this;
+    }
+
+    public function prepare()
+    {
+        $view = $this->view;
+
+        $view->headLink()->appendStylesheet(MAJ_STYLES . '/common-classes.css');
+        $view->headLink()->appendStylesheet(APP_STYLES . '/default/default.css');
+    }
+
+    public function toString()
     {
         $view = $this->view;
 
@@ -23,7 +36,7 @@ class MajistiW_View_Helper_Headers extends Zend_View_Helper_Abstract
         $headers[] = $view->headStyle()->toString();
         $headers[] = trim($view->jQuery(), PHP_EOL);
         $headers[] = $view->headScript()->toString();
-        $headers[] = $view->headTitle();
+        $headers[] = $view->headTitle(APPLICATION_NAME);
 
         /* append PHP_EOL on non empty strings */
         $output = '';
@@ -36,5 +49,10 @@ class MajistiW_View_Helper_Headers extends Zend_View_Helper_Abstract
         }
 
         return $output;
+    }
+
+    public function __toString()
+    {
+        return $this->toString();
     }
 }

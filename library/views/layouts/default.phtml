@@ -9,25 +9,19 @@
 <head>
 <?
 print $this->headers();
-print $this->headTitle(APPLICATION_NAME) . PHP_EOL;
 ?>
 </head>
 <body>
 <div id="container">
-
     <!-- Header -->
-    <div id="header">
-        <div class="banner"></div>
-    </div>
+    <div id="header"><?=$this->render('default/header.phtml')?></div>
 
     <!-- Content -->
     <div id="content">
-        <?=$this->navigation() . PHP_EOL;?>
-        <?$breadcrumbs = $this->navigation()->breadcrumbs()->__toString();
-        if( !empty($breadcrumbs) ) print '<p>' . $breadcrumbs . '</p>' . PHP_EOL;?>
-        <p><?=$this->render('blocks/language-switcher.phtml') . PHP_EOL;?></p>
         <?=$this->layout()->content . PHP_EOL?>
     </div>
+
+    <div id="footer"></div>
 </div>
 <?=$this->inlineScript();?>
 </body>

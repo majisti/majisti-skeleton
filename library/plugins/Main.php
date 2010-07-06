@@ -1,9 +1,10 @@
 <?php
 
-class MajistiW_Plugin_Main extends Zend_Controller_Plugin_Abstract
+class MajistiT_Plugin_Main extends Zend_Controller_Plugin_Abstract
 {
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+        $this->getView()->headers()->prepare();
     }
 
     public function getView()

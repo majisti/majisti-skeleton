@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiW\Application;
+namespace MajistiT\Application;
 
 /**
  * TODO: documentation

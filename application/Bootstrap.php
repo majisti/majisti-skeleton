@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiW\Application;
+namespace MajistiT\Application;
 
 /**
  * @desc The application's bootstrap
@@ -18,16 +18,8 @@ class Bootstrap extends \MajistiP\Application\Bootstrap
         $this->getResource('view')->setUseStreamWrapper(true);
 
         $front = $this->getResource('FrontController');
-        $front->setDefaultModule('company');
-        $front->registerPlugin(new \MajistiW_Plugin_Main());
-        
+        $front->registerPlugin(new \MajistiT_Plugin_Main());
+
         parent::run();
-    }
-    
-    public function wordpressIntegration()
-    {
-        require_once APP_LIB . '/models/Integration/Wordpress/Facade.php';
-        \MajistiW_Model_Integration_Wordpress_Facade::getInstance()
-            ->integrate($this);
     }
 }

@@ -5,7 +5,7 @@
  *
  * @author Steven Rosato
  */
-class Company_Bootstrap extends Zend_Application_Module_Bootstrap
+class Bootstrap extends Zend_Application_Module_Bootstrap
 {
     public function __construct($application)
     {
