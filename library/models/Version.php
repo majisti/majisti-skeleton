@@ -1,11 +1,13 @@
 <?php
 
+namespace MajistiT\Model;
+
 /**
- * Description of Version
+ * @desc Version of this entire project.
  *
- * @author ratius
+ * @author Majisti
  */
-class MajistiT_Model_Version
+class Version
 {
     const VERSION = "0.1.0dev";
 }

@@ -1,11 +1,13 @@
 <?php
 
+namespace MajistiT\View\Helper;
+
 /**
  * @desc Returns common headers for this application
  *
  * @author Steven Rosato
  */
-class MajistiT_View_Helper_Headers extends Zend_View_Helper_Abstract
+class Headers extends \Zend_View_Helper_Abstract
 {
     /**
      * @desc Returns the common headers for this application
@@ -21,8 +23,8 @@ class MajistiT_View_Helper_Headers extends Zend_View_Helper_Abstract
     {
         $view = $this->view;
 
-        $view->headLink()->appendStylesheet(MAJ_STYLES . '/common-classes.css');
-        $view->headLink()->appendStylesheet(APP_STYLES . '/default/default.css');
+        $view->headLink()->appendStylesheet(MA_URL . '/styles/common.css');
+        $view->headLink()->appendStylesheet(MA_APP_BASEURL . '/styles/default/default.css');
     }
 
     public function toString()
@@ -36,7 +38,7 @@ class MajistiT_View_Helper_Headers extends Zend_View_Helper_Abstract
         $headers[] = $view->headStyle()->toString();
         $headers[] = trim($view->jQuery(), PHP_EOL);
         $headers[] = $view->headScript()->toString();
-        $headers[] = $view->headTitle(APPLICATION_NAME);
+        $headers[] = $view->headTitle(MA_APP_NS);
 
         /* append PHP_EOL on non empty strings */
         $output = '';

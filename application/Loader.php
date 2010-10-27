@@ -1,63 +1,140 @@
 <?php
 
-namespace MajistiT\Application;
+namespace Majisti\Application;
 
 /**
  * TODO: documentation
  *
  * @desc Deploy anywhere Majisti's concrete loader
  *
- * @author Steven Rosato
- * @version 1.0.0
+ * @author Majisti
+ * @version 1.1.0
  */
 final class Loader
 {
-    /** @var Loader */
-    static private $_instance;
-    static private $_application;
+    /**
+     * @var Array
+     */
+    private $_options;
 
     private $_majistiLibraryPath;
 
     const MAX_DEPTH = 100;
 
-    /**
-     * @desc Starts the loading
-     *
-     * @throws Exception If this function is called more than one time
-     */
-    static public function load($autoRunApplication = true)
+    public function __construct($options = array())
     {
-        if( null !== self::$_instance ) {
-            throw new \Exception('Instance already loaded');
-        }
-
-        self::$_instance = new self($autoRunApplication);
+        $this->setOptions($options);
+        $this->init();
     }
 
-    /**
-     * @desc Constructs this application's Loader, initializing the
-     * include paths, the required Loaders and the application's constants.
-     */
-    private function __construct($autoRun = true)
+    static public function getDefaultOptions()
     {
-        $this->_setIncludePaths();
-        $this->_registerLoaders();
+        return array('majisti' => array(
+            'app' => array(
+                'namespace'   => 'MyApplication',
+                'path'        => dirname(__DIR__),
+                'env' => 'development',
+            ),
+            'ext' => array(),
+            'lib' => array(
+               'majisti'    => 'majisti/libraries',
+            ),
+            'autoFindLibraries' => true,
+        ));
+    }
 
-        if( $autoRun ) {
-            self::run();
+    public function getOptions()
+    {
+        return $this->_options;
+    }
+
+    public function setOptions(array $options = array())
+    {
+        $this->_options = array_replace_recursive(
+            self::getDefaultOptions(),
+            $options
+        );
+    }
+
+    private function init()
+    {
+        $libraries = $this->getLibrariesPaths();
+
+        set_include_path(implode(PATH_SEPARATOR,
+                $libraries + array(get_include_path())));
+
+        require_once 'Zend/Loader/Autoloader.php';
+        $autoloader = \Zend_Loader_Autoloader::getInstance();
+
+        require_once 'Majisti/Loader/Autoloader.php';
+        $autoloader->pushAutoloader(new \Majisti\Loader\Autoloader());
+    }
+
+    public function launchApplication()
+    {
+        $manager = new Manager($this->getOptions());
+        $manager->getApplication()->bootstrap()->run();
+    }
+
+    public function getLibrariesPaths()
+    {
+        $paths   = array();
+        $options = $this->getOptions();
+
+        $autoFind = isset($options['majisti']['autoFindLibraries']) && $options['majisti']['autoFindLibraries'];
+
+        foreach($options['majisti']['lib'] as $lib) {
+            if( !($path = realpath($lib) ) ) {
+                if( $autoFind ) {
+                    $path = $this->findLibrary($lib);
+                } else {
+                    throw new \Exception("Path ${lib} does not map anywhere!");
+                }
+            }
+
+            $paths[] = $path;
         }
+
+        return $paths;
+    }
+
+    public function findLibrary($partialPath)
+    {
+        $depth = self::MAX_DEPTH;
+        $dir   = __DIR__;
+        $found = false;
+
+        $partialPath = trim($partialPath, '/');
+
+        while( !$found && $depth > 0 ) {
+            if( !realpath($dir . '/' . $partialPath) ) {
+                $dir = dirname($dir);
+            } else {
+                $found = true;
+            }
+
+            $depth--;
+        }
+
+        if( !$found ) {
+            throw new \Exception("Max depth level of " . self::MAX_DEPTH . " reached
+                    while searching for library with path {$partialPath}");
+        }
+
+        return $dir . '/' . $partialPath;
     }
 
     /**
      * @desc Includes Majisti's library and its external libraries
      * such as Zend and ZendX.
      */
-    private function _setIncludePaths()
+    private function setIncludePaths()
     {
         set_include_path(implode(PATH_SEPARATOR, array(
-            realpath($this->_getMajistiTopLevelPath(self::MAX_DEPTH) . '/../majistip/library'),
-            realpath($this->_getMajistiTopLevelPath(self::MAX_DEPTH) . '/library'),
-            realpath($this->_getMajistiTopLevelPath(self::MAX_DEPTH) . '/externals'),
+            realpath($this->getMajistiPath(self::MAX_DEPTH) . '/../majistip/library'),
+            realpath($this->getMajistiPath(self::MAX_DEPTH) . '/library'),
+            dirname(__DIR__) . '/library',
+            realpath($this->getMajistiPath(self::MAX_DEPTH) . '/externals'),
             get_include_path(),
         )));
     }
@@ -66,7 +143,7 @@ final class Loader
      * @desc Registers Zend's loader for Zend's default class searching and
      * Majisti's default AutoLoader which supports PHP namespaces.
      */
-    private function _registerLoaders()
+    private function registerLoaders()
     {
         require_once 'Zend/Loader/Autoloader.php';
         $autoloader = \Zend_Loader_Autoloader::getInstance();
@@ -95,7 +172,7 @@ final class Loader
      * MAJISTI_FOLDER_NAME | MAJIST_LIBRARY_PATH constant defined
      * in public/index.php
      */
-    private function _getMajistiTopLevelPath($maxDepth = 100)
+    private function getMajistiPath($maxDepth = 100)
     {
         if( null !== $this->_majistiLibraryPath ) {
             return $this->_majistiLibraryPath;
@@ -109,7 +186,7 @@ final class Loader
                 throw new \Exception('MAJISTI_FOLDER_NAME not defined');
             }
 
-            $this->_majistiLibraryPath = $this->_searchMajistiFolderName($maxDepth);
+            $this->_majistiLibraryPath = $this->searchMajistiFolderName($maxDepth);
         }
 
         return $this->_majistiLibraryPath;
@@ -122,9 +199,9 @@ final class Loader
      * @throws Exception If the library directory was never found
      * @return String Majisti's library absolute path
      */
-    private function _searchMajistiFolderName($maxDepth)
+    private function searchMajistiFolderName($maxDepth)
     {
-        $upDir = dirname(dirname(__FILE__));
+        $upDir = dirname(__DIR__);
 
         $foundDir = false;
         while( !$foundDir && $maxDepth > 0 ) {
@@ -142,29 +219,5 @@ final class Loader
         }
 
         return realpath($upDir . '/' . MAJISTI_FOLDER_NAME);
-    }
-
-    /**
-     * @desc Returns the application
-     *
-     * @return \Majisti\Application The application
-     */
-    static public function getApplication()
-    {
-        if( null === self::$_application ) {
-            \Majisti\Application::setApplicationPath(dirname(__FILE__));
-            self::$_application = \Majisti\Application::getInstance();
-        }
-
-        return self::$_application;
-    }
-
-    /**
-     * @desc Runs the application
-     */
-    static public function run()
-    {
-        /* Create application, bootstrap, and run */
-        self::getApplication()->bootstrap()->run();
     }
 }

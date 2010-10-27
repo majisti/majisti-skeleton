@@ -5,7 +5,7 @@ namespace MajistiT\Application;
 /**
  * @desc The application's bootstrap
  *
- * @author Steven Rosato
+ * @author Majisti
  */
 class Bootstrap extends \MajistiP\Application\Bootstrap
 {
@@ -18,7 +18,7 @@ class Bootstrap extends \MajistiP\Application\Bootstrap
         $this->getResource('view')->setUseStreamWrapper(true);
 
         $front = $this->getResource('FrontController');
-        $front->registerPlugin(new \MajistiT_Plugin_Main());
+        $front->registerPlugin(new \MajistiT\Plugin\Main());
 
         parent::run();
     }

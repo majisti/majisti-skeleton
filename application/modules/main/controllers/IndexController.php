@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @desc The company's index controller.
+ * @desc The index controller.
  *
- * @author Steven Rosato
+ * @author Majisti
  */
 class IndexController extends Zend_Controller_Action
 {
