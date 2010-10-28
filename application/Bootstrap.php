@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiT\Application;
+namespace MyApp\Application;
 
 /**
  * @desc The application's bootstrap
@@ -18,7 +18,7 @@ class Bootstrap extends \MajistiP\Application\Bootstrap
         $this->getResource('view')->setUseStreamWrapper(true);
 
         $front = $this->getResource('FrontController');
-        $front->registerPlugin(new \MajistiT\Plugin\Main());
+        $front->registerPlugin(new \MyApp\Plugin\Main());
 
         parent::run();
     }

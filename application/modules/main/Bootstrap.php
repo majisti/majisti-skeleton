@@ -5,7 +5,7 @@
  *
  * @author Steven Rosato
  */
-class Main_Bootstrap extends Zend_Application_Module_Bootstrap
+class Main_Bootstrap extends \Majisti\Application\ModuleBootstrap
 {
 
 }

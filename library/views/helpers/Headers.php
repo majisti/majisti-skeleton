@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiT\View\Helper;
+namespace MyApp\View\Helper;
 
 /**
  * @desc Returns common headers for this application

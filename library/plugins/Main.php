@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiT\Plugin;
+namespace MyApp\Plugin;
 
 class Main extends \Zend_Controller_Plugin_Abstract
 {

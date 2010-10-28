@@ -2,7 +2,7 @@
 
 $settings = array('majisti' => array(
     'app' => array(
-        'namespace' => 'MajistiT',
+        'namespace' => 'MyApp',
         'env'       => 'development',
     ),
     'lib'       => array(

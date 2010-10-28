@@ -1,0 +1,13 @@
+---
+Message:
+  columns:
+      id:
+          primary: true
+          autoincrement: true
+          type: integer(4)
+      posted:
+          type: timestamp
+      name:
+          type: string(255)
+      message:
+          type: string

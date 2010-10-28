@@ -1,6 +1,6 @@
 <?php
 
-namespace MajistiT\Model;
+namespace MyApp\Model;
 
 /**
  * @desc Version of this entire project.
