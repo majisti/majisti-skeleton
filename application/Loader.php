@@ -37,6 +37,7 @@ final class Loader
             ),
             'ext' => array(),
             'lib' => array(
+               'app'        => dirname(__DIR__) . '/library',
                'majisti'    => 'majisti/libraries',
             ),
             'autoFindLibraries' => true,
@@ -66,14 +67,20 @@ final class Loader
         require_once 'Zend/Loader/Autoloader.php';
         $autoloader = \Zend_Loader_Autoloader::getInstance();
 
+        $autoloader->setFallbackAutoloader(true);
+
         require_once 'Majisti/Loader/Autoloader.php';
         $autoloader->pushAutoloader(new \Majisti\Loader\Autoloader());
     }
 
+    public function createApplicationManager()
+    {
+        return new Manager($this->getOptions());
+    }
+
     public function launchApplication()
     {
-        $manager = new Manager($this->getOptions());
-        $manager->getApplication()->bootstrap()->run();
+        $this->createApplicationManager()->getApplication()->bootstrap()->run();
     }
 
     public function getLibrariesPaths()
