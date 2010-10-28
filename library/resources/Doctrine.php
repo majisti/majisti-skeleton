@@ -54,6 +54,7 @@ class Doctrine extends \Zend_Application_Resource_ResourceAbstract
         \Zend_Registry::set('Doctrine_Helperset', $helperSet);
 
         /* inject into the model container and enable automatic persistence */
+        /* @var $mc \Majisti\Model\Container */
         $mc = $bootstrap->bootstrap('Modelcontainer')->getResource('modelContainer');
         $mc->setEntityManager($em);
         $mc->setAutomaticPersistenceEnabled(true);

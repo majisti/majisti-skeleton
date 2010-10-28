@@ -1,43 +1,43 @@
 <?php
 
-namespace MyApp\Main\Model;
+namespace MyApp\Model;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @Entity
- * @Table(name="myapp_main_book")
+ * @entity
+ * @table(name="myapp_book")
  */
 class Book
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @id @column(name="id", type="integer")
+     * @generatedValue
      * @var int
      */
     private $_id;
 
     /**
-     * @Column(name="title", type="string")
+     * @column(name="title", type="string")
      * @var string
      */
     private $_title;
 
     /**
-     * @Column(name="publication_year", type="integer")
+     * @column(name="publication_year", type="integer")
      * @var string
      */
     private $_publicationYear;
 
     /**
-     * @ManyToMany(targetEntity="\MyApp\Model\Article", cascade={"all"})
-     * @JoinTable(name="myapp_book_articles",
+     * @manyToMany(targetEntity="Article", cascade={"all"})
+     * @joinTable(name="myapp_book_articles",
      *     joinColumns={@JoinColumn(name="book_id", referencedColumnName="id")},
      *     inverseJoinColumns={@JoinColumn(name="article_id",
      *         referencedColumnName="id", unique="true")}
      * )
      *
-     * @var ArrayCollection
+     * @var ArrayCollection of Article objects
      */
     private $_articles;
 
@@ -87,9 +87,9 @@ class Book
     /**
      * @desc Adds an article to the book.
      *
-     * @param \MyApp\Model\Article $article
+     * @param Article $article
      */
-    public function addArticle(\MyApp\Model\Article $article)
+    public function addArticle(Article $article)
     {
         $this->_articles->add($article);
     }
