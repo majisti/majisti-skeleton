@@ -1,39 +1,13 @@
 <?php
 
-use \Doctrine\DBAL\Migrations\Tools\Console\Command as MigrationCommand,
-    \Doctrine\ORM\Tools\Console\ConsoleRunner;
-
 require_once dirname(__DIR__) . '/bootstrap.php';
 
-$manager = $appLoader->createApplicationManager();
-$manager->getApplication()->bootstrap();
+global $appLoader;
 
-/* create the cli */
-$cli = new Symfony\Component\Console\Application(
-    'Doctrine Command Line Interface',
-    \Doctrine\ORM\Version::VERSION
-);
+$app = $appLoader->createApplicationManager()->getApplication();
+$app->bootstrap();
 
-$cli->setCatchExceptions(true);
-$cli->setHelperSet(\Zend_Registry::get('Doctrine_Helperset'));
+$cliLoader = new \Majisti\View\Cli\Doctrine\CliLoader($app);
+$cliLoader->runCli();
 
-/* add default commands */
-ConsoleRunner::addCommands($cli);
-
-/* add migrations commands */
-$cli->addCommands(array(
-    new MigrationCommand\DiffCommand(),
-    new MigrationCommand\ExecuteCommand(),
-    new MigrationCommand\GenerateCommand(),
-    new MigrationCommand\MigrateCommand(),
-    new MigrationCommand\StatusCommand(),
-    new MigrationCommand\VersionCommand()
-));
-
-$cli->addCommand(new \MyApp\Model\LoadDataFixturesCommand());
-
-//$command = $cli->getCommand('orm:schema-tool:update');
-//\Zend_Debug::dump($command->getName());
-//exit;
-
-$cli->run();
+unset($appLoader, $app, $cliLoader);
