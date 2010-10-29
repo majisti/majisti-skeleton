@@ -20,6 +20,9 @@ class Bootstrap extends \MajistiP\Application\Bootstrap
         $front = $this->getResource('FrontController');
         $front->registerPlugin(new \MyApp\Plugin\Main());
 
+        require_once 'phpQuery.php';
+        \phpQuery::newDocumentXHTML();
+
         parent::run();
     }
 }

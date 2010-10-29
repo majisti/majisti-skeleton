@@ -5,7 +5,7 @@ namespace MyApp\Model;
 use \Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @entity
+ * @entity(repositoryClass="MyApp\Model\BookRepository")
  * @table(name="myapp_book")
  */
 class Book
@@ -15,19 +15,19 @@ class Book
      * @generatedValue
      * @var int
      */
-    private $_id;
+    private $id;
 
     /**
      * @column(name="title", type="string")
      * @var string
      */
-    private $_title;
+    private $title;
 
     /**
      * @column(name="publication_year", type="integer")
      * @var string
      */
-    private $_publicationYear;
+    private $publicationYear;
 
     /**
      * @manyToMany(targetEntity="Article", cascade={"all"})
@@ -39,14 +39,14 @@ class Book
      *
      * @var ArrayCollection of Article objects
      */
-    private $_articles;
+    private $articles;
 
     /**
      * @desc Constructs the book
      */
     public function __construct()
     {
-        $this->_articles = new ArrayCollection();
+        $this->articles = new ArrayCollection();
     }
 
     /**
@@ -54,7 +54,7 @@ class Book
      */
     public function getTitle()
     {
-        return $this->_title;
+        return $this->title;
     }
 
     /**
@@ -63,7 +63,7 @@ class Book
      */
     public function setTitle($title)
     {
-        $this->_title = $title;
+        $this->title = $title;
     }
 
     /**
@@ -73,7 +73,7 @@ class Book
      */
     public function getArticles()
     {
-        return clone $this->_articles;
+        return clone $this->articles;
     }
 
     /**
@@ -81,7 +81,7 @@ class Book
      */
     public function setPublicationYear($publicationYear)
     {
-        $this->_publicationYear = $publicationYear;
+        $this->publicationYear = $publicationYear;
     }
 
     /**
@@ -91,6 +91,44 @@ class Book
      */
     public function addArticle(Article $article)
     {
-        $this->_articles->add($article);
+        $this->articles->add($article);
+    }
+
+    /**
+     * @desc Bookshelfs this book to a given library.
+     *
+     * @param Library\Library $library The library to bookshelf this book
+     */
+    public function bookshelf(Library\Library $library)
+    {
+        $library->bookshelf($this);
+    }
+}
+
+class BookRepository extends \Doctrine\ORM\EntityRepository
+{
+    /**
+     * @return array
+     */
+    public function getThisYearBooks()
+    {
+        return $this->findByPublicationYear(date('Y'));
+    }
+
+    /**
+     * @desc Get the recent books specified by a backtracking years span.
+     *
+     * @param int $span Years span
+     * @return \Doctrine\ORM\AbstractQuery
+     */
+    public function getRecentBooks($span = 10)
+    {
+        $to   = date('Y');
+        $from = $to - $span;
+
+        return $this->_em->createQuery(
+            "select b from MyApp\Model\Book b where " .
+            "b.publicationYear > $from and b.publicationYear <= $to"
+        )->getResult();
     }
 }
