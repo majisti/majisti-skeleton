@@ -41,51 +41,17 @@ class IndexController extends Zend_Controller_Action
 
     public function fooAction()
     {
-        //MC UC-01
-        /* @var $mc \Majisti\Model\Container */
-//        $mc = $this->_helper->model();
-//        $mc->setAutomaticPersistenceEnabled(true);
-//
-//        $mc->addModel('book', 'default', 'MyApp\Model\Book');
-//
-//        $book = $mc->getModel('book');
-//
-//        $book->setTitle('A book');
-//        $book->setPublicationYear(2011);
-//
-//        $mc->save();
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->_helper->doctrine();
+        /* @var $rep \MyApp\Model\BookRepository */
+        $rep = $em->getRepository('MyApp\Model\Book');
 
-        //Doctrine UC-02
-        /* @var $em = \Doctrine\ORM\EntityManager */
-//        $em = $this->_helper->doctrine();
-//
-//        $book = new \MyApp\Model\Book();
-//        $em->persist($book);
-//
-//        $book->setTitle('foo');
-//        $book->setPublicationYear(2012);
-//
-//        $em->flush();
+        /* @var $books \Doctrine\ORM\AbstractQuery */
+        $books = $rep->getRecentBooks();
 
-        //MC UC-03
-//        $mc->addModel('book', 'default', 'MyApp\Model\Book');
+        /* @var $articles \Doctrine\Common\Collections\ArrayCollection */
+        $articles = $books[0]->getArticles();
 
-        //...
-
-//        $mc->find('book', 3);
-//        $mc->createNew('book');
-
-//        $mc->getRepository('book')->createQuery('...');
-
-        $sc = new DependencyInjection\ContainerBuilder();
-        $sc->register('book', 'MyApp\Model\Book');
-
-        $book = $sc->get('book');
-        $book->setTitle('foo');
-
-        $book2 = $sc->get('book');
-
-        \Zend_Debug::dump($book);
-        \Zend_Debug::dump($book2);
+        \Zend_Debug::dump($articles->toArray());
     }
 }

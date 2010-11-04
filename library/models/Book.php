@@ -93,16 +93,6 @@ class Book
     {
         $this->articles->add($article);
     }
-
-    /**
-     * @desc Bookshelfs this book to a given library.
-     *
-     * @param Library\Library $library The library to bookshelf this book
-     */
-    public function bookshelf(Library\Library $library)
-    {
-        $library->bookshelf($this);
-    }
 }
 
 class BookRepository extends \Doctrine\ORM\EntityRepository
@@ -119,7 +109,7 @@ class BookRepository extends \Doctrine\ORM\EntityRepository
      * @desc Get the recent books specified by a backtracking years span.
      *
      * @param int $span Years span
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return \Doctrine\ORM\AbstractQuery The query
      */
     public function getRecentBooks($span = 10)
     {
@@ -127,7 +117,7 @@ class BookRepository extends \Doctrine\ORM\EntityRepository
         $from = $to - $span;
 
         return $this->_em->createQuery(
-            "select b from MyApp\Model\Book b where " .
+            "select b from " . __NAMESPACE__ . "\Book b where " .
             "b.publicationYear > $from and b.publicationYear <= $to"
         )->getResult();
     }
