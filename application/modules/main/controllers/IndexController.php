@@ -54,4 +54,11 @@ class IndexController extends Zend_Controller_Action
 
         \Zend_Debug::dump($articles->toArray());
     }
+
+    public function realisationsAction()
+    {
+        $about = new \MyApp\Main\Model\About();
+        $realisations = $about->getRealisations();
+        \Zend_Debug::dump($realisations);
+    }
 }

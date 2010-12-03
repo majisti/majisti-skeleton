@@ -7,7 +7,7 @@ namespace MyApp\Application;
  *
  * @author Majisti
  */
-class Bootstrap extends \MajistiP\Application\Bootstrap
+class Bootstrap extends \Majisti\Application\Bootstrap
 {
     /**
      * @desc Runs the bootstrap
