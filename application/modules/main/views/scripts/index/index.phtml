@@ -5,6 +5,7 @@
  * @author Majisti
  */
 
-?>
+$content = pq('<div />')
+    ->html("Hello World from index.phtml!");
 
-Hello World from index.phtml!
+$this->setRenderReturn($content);

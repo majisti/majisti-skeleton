@@ -7,7 +7,7 @@ namespace MyApp\Application;
  *
  * @author Majisti
  */
-class Bootstrap extends \MajistiP\Application\Bootstrap
+class Bootstrap extends \Majisti\Application\Bootstrap
 {
     /**
      * @desc Runs the bootstrap
@@ -19,6 +19,9 @@ class Bootstrap extends \MajistiP\Application\Bootstrap
 
         $front = $this->getResource('FrontController');
         $front->registerPlugin(new \MyApp\Plugin\Main());
+
+        require_once 'phpQuery.php';
+        \phpQuery::newDocumentXHTML();
 
         parent::run();
     }

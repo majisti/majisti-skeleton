@@ -1,7 +1,8 @@
 <?php
 
-use MyApp\Main\Model\Book,
-    MyApp\Model\Article;
+use MyApp\Model\Book,
+    MyApp\Model\Article,
+    Symfony\Component\DependencyInjection;
 
 /**
  * @desc The index controller.
@@ -15,23 +16,49 @@ class IndexController extends Zend_Controller_Action
      */
     public function indexAction()
     {
-        $mc = $this->_helper->model();
-        /* @var $book Book */
-        $book = $mc->getModel('MyApp\Model\Book'); //auto persisted
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->_helper->doctrine();
+
+        $book = new Book();
         $book->setTitle('A new book');
         $book->setPublicationYear(2009);
+
+        $em->persist($book);
 
         $article = new Article();
         $article->setTitle("A new article title");
 
         $book->addArticle($article);
 
-        $mc->flush();
+        $em->flush();
 
+        /* @var $repo \MyApp\Model\BookRepository */
+        $repo = $em->getRepository('MyApp\Model\Book');
+        $books = $repo->getRecentBooks();
+
+        $this->books = $books;
+    }
+
+    public function fooAction()
+    {
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = \Zend_Registry::get('Doctrine_EntityManager');
-        $book = $em->find('MyApp\Model\Book', 1);
+        $em = $this->_helper->doctrine();
+        /* @var $rep \MyApp\Model\BookRepository */
+        $rep = $em->getRepository('MyApp\Model\Book');
 
-        \Zend_Debug::dump($book->getArticles()->toArray());
+        /* @var $books \Doctrine\ORM\AbstractQuery */
+        $books = $rep->getRecentBooks();
+
+        /* @var $articles \Doctrine\Common\Collections\ArrayCollection */
+        $articles = $books[0]->getArticles();
+
+        \Zend_Debug::dump($articles->toArray());
+    }
+
+    public function realisationsAction()
+    {
+        $about = new \MyApp\Main\Model\About();
+        $realisations = $about->getRealisations();
+        \Zend_Debug::dump($realisations);
     }
 }

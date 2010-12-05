@@ -12,19 +12,19 @@ class Article
      * @id @column(name="id", type="integer")
      * @generatedValue
      */
-    private $_id;
+    private $id;
 
     /**
      * @column(name="title", type="string")
      */
-    private $_title;
+    private $title;
 
     /**
      * @return string the article title
      */
     public function getTitle()
     {
-        return $this->_title;
+        return $this->title;
     }
 
     /**
@@ -33,6 +33,6 @@ class Article
      */
     public function setTitle($title)
     {
-        $this->_title = $title;
+        $this->title = $title;
     }
 }
