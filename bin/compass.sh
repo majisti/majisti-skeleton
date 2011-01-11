@@ -1,3 +1,3 @@
 #!/bin/bash
 
-( cd ../application/sass ; compass watch )
+( cd ../application/scss ; compass watch )
