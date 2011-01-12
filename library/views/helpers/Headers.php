@@ -2,6 +2,8 @@
 
 namespace MyApp\View\Helper;
 
+use \Majisti\View\Helper\Head as Head;
+
 /**
  * @desc Returns common headers for this application
  *
@@ -9,5 +11,6 @@ namespace MyApp\View\Helper;
  */
 class Headers extends \Majisti\View\Helper\Headers
 {
-   
+
 }
+   
