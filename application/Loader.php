@@ -41,7 +41,7 @@ final class Loader
             'ext' => array(),
             'lib' => array(
                'app'        => dirname(__DIR__) . '/library',
-               'majisti'    => 'majisti/libraries',
+               'majisti'    => 'majisti/lib',
             ),
             'autoFindLibraries' => true,
         ));
