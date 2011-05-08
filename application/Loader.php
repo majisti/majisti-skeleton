@@ -2,8 +2,10 @@
 
 namespace Majisti\Application;
 
+use Doctrine\Common\ClassLoader;
+
 /**
- * @desc Deploy anywhere Majisti's concrete loader
+ * Deploy anywhere Majisti's concrete loader
  *
  * @author Steven Rosato
  */
@@ -17,7 +19,7 @@ final class Loader
     const MAX_DEPTH = 100;
 
     /**
-     * @desc Constructs the loader.
+     * Constructs the loader.
      * @param array $options The options
      */
     public function __construct(array $options = array())
@@ -27,28 +29,32 @@ final class Loader
     }
 
     /**
-     * @desc Returns the default options.
+     * Returns the default options.
      * @return array The default options
      */
     static public function getDefaultOptions()
     {
-        return array('majisti' => array(
+        $conf = array('majisti' => array(
+            'path'    => 'majisti-0.4/lib',
             'app' => array(
-                'namespace'   => 'MyApplication',
-                'path'        => dirname(__DIR__),
-                'env' => 'development',
+                'namespace' => 'Cochimbec',
+                'path'      => dirname(__DIR__),
+                'env'       => 'development',
             ),
-            'ext' => array(),
-            'lib' => array(
-               'app'        => dirname(__DIR__) . '/library',
-               'majisti'    => 'majisti/libraries',
-            ),
-            'autoFindLibraries' => true,
+            'ext'     => array(),
         ));
+
+        if( 'cli' === php_sapi_name() ) {
+            $baseUrl = dirname(__DIR__) . '/public';
+            $conf['majisti']['app']['baseUrl'] = $baseUrl;
+            $conf['majisti']['app']['url']     = $baseUrl;
+        }
+
+        return $conf;
     }
 
     /**
-     * @desc Returns the options
+     * Returns the options
      *
      * @return array The options
      */
@@ -58,7 +64,7 @@ final class Loader
     }
 
     /**
-     * @desc Sets the options
+     * Sets the options
      * @param array $options The options
      */
     public function setOptions(array $options = array())
@@ -70,33 +76,27 @@ final class Loader
     }
 
     /**
-     * @desc Inits the loader
+     * Inits the loader
      */
     private function init()
     {
-        $libraries = $this->getLibrariesPaths();
+        $this->findMajisti();
+        $this->updateSymlinks();
 
-        set_include_path(implode(PATH_SEPARATOR,
-                $libraries + array(get_include_path())));
+        $majPath = $this->_options['majisti']['path'];
 
-        $this->updateSymlinks($libraries['majisti']);
-
-        require_once 'Zend/Loader/Autoloader.php';
-        $autoloader = \Zend_Loader_Autoloader::getInstance();
-
-        $autoloader->setFallbackAutoloader(true);
-
-        require_once 'Majisti/Loader/Autoloader.php';
-        $autoloader->pushAutoloader(new \Majisti\Loader\Autoloader());
+        require_once $majPath .
+            '/vendor/doctrine2-common/lib/Doctrine/Common/ClassLoader.php';
+        $loader = new ClassLoader('Majisti', $majPath);
+        $loader->register();
     }
 
     /**
-     * @desc Update application's symlinks according to newly found library.
-     *
-     * @param string $lib Majisti's lib path
+     * Update application's symlinks according to newly found library.
      */
-    private function updateSymlinks($lib)
+    private function updateSymlinks()
     {
+        $lib      = $this->_options['majisti']['path'];
         $appDir   = dirname(__DIR__) . '/public';
         $majDir   = realpath($lib . '/../public');
         $symlink  = $appDir . '/majisti';
@@ -116,7 +116,7 @@ final class Loader
     }
 
     /**
-     * @desc Creates an application manager.
+     * Creates an application manager.
      * @return Manager The manager
      */
     public function createApplicationManager()
@@ -125,42 +125,31 @@ final class Loader
     }
 
     /**
-     * @desc Launches the application, bootstrapping it and running it altogether.
+     * Launches the application, bootstrapping it and running it altogether.
      */
     public function launchApplication()
     {
-        $this->createApplicationManager()->getApplication()->bootstrap()->run();
+        $this->createApplicationManager()
+             ->getApplication()
+             ->bootstrap()
+             ->run();
     }
 
     /**
-     * @desc Returns every libraries specified in the options, autofinding them
-     * if required.
-     * @return string The libraries paths
+     * Finds the majisti library and resolves its real path.
      */
-    public function getLibrariesPaths()
+    public function findMajisti()
     {
         $paths   = array();
-        $options = $this->getOptions();
+        $lib     = $this->_options['majisti']['path'];
 
-        $autoFind = isset($options['majisti']['autoFindLibraries']) && $options['majisti']['autoFindLibraries'];
-
-        foreach($options['majisti']['lib'] as $key => $lib) {
-            if( !($path = realpath($lib) ) ) {
-                if( $autoFind ) {
-                    $path = $this->findLibrary($lib);
-                } else {
-                    throw new \Exception("Path ${lib} does not map anywhere!");
-                }
-            }
-
-            $paths[$key] = $path;
+        if( !($path = realpath($lib) ) ) {
+            $this->_options['majisti']['path'] = $this->findLibrary($lib);
         }
-
-        return $paths;
     }
 
     /**
-     * @desc Finds a library updir.
+     * Finds a library updir.
      *
      * @param string $partialPath The partial path
      * @return string The found lib path

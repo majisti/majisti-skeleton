@@ -6,7 +6,7 @@ $settings = array('majisti' => array(
         'env'       => 'development',
     ),
     'lib'       => array(
-        'majisti' => 'majisti-0.4/libraries',
+        'majisti' => 'majisti-0.4/lib',
     ),
     'url' => array(
         'production' => 'http://static.majisti.com'
